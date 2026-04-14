@@ -1,0 +1,647 @@
+{
+  "info": {
+    "name": "AccountController Tests",
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "description": "Коллекция тестов для AccountController (Hello_Spring).\nБазовый URL: http://localhost:8081\n\nПорядок запуска:\n1. Health Check\n2. Create Account (сохраняет accountId в переменную)\n3. Get Account by ID\n4. Get All Accounts\n5. Delete Account\n6. Негативные сценарии",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "accountId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check",
+      "item": [
+        {
+          "name": "GET /hello — 200 OK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response body is \"Hello Spring !\"', function () {",
+                  "    pm.expect(pm.response.text()).to.equal('Hello Spring !');",
+                  "});",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/hello",
+              "host": ["{{baseUrl}}"],
+              "path": ["hello"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Create Account — POST /accounts",
+      "item": [
+        {
+          "name": "POST /accounts — 201 Created (valid data)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response is a numeric ID', function () {",
+                  "    var id = parseInt(pm.response.text());",
+                  "    pm.expect(id).to.be.a('number');",
+                  "    pm.expect(id).to.be.above(0);",
+                  "});",
+                  "",
+                  "// Сохраняем ID для следующих запросов",
+                  "var createdId = pm.response.text().trim();",
+                  "pm.collectionVariables.set('accountId', createdId);",
+                  "console.log('Created account ID:', createdId);",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ivan Petrov\",\n  \"email\": \"ivan.petrov@example.com\",\n  \"bill\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts"]
+            }
+          }
+        },
+        {
+          "name": "POST /accounts — 201 Created (bill = 0)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response is a numeric ID', function () {",
+                  "    var id = parseInt(pm.response.text());",
+                  "    pm.expect(id).to.be.a('number');",
+                  "    pm.expect(id).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Anna Sidorova\",\n  \"email\": \"anna@example.com\",\n  \"bill\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts"]
+            }
+          }
+        },
+        {
+          "name": "POST /accounts — 201 Created (bill = null)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response is a numeric ID', function () {",
+                  "    var id = parseInt(pm.response.text());",
+                  "    pm.expect(id).to.be.a('number');",
+                  "    pm.expect(id).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"bill\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Get Account by ID — GET /accounts/{id}",
+      "item": [
+        {
+          "name": "GET /accounts/{id} — 200 OK (существующий ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Content-Type is application/json', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response has required fields', function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('accountId');",
+                  "    pm.expect(json).to.have.property('name');",
+                  "    pm.expect(json).to.have.property('email');",
+                  "    pm.expect(json).to.have.property('bill');",
+                  "});",
+                  "",
+                  "pm.test('accountId matches requested ID', function () {",
+                  "    var json = pm.response.json();",
+                  "    var requestedId = parseInt(pm.collectionVariables.get('accountId'));",
+                  "    pm.expect(json.accountId).to.equal(requestedId);",
+                  "});",
+                  "",
+                  "pm.test('name is a non-empty string', function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.name).to.be.a('string').and.not.empty;",
+                  "});",
+                  "",
+                  "pm.test('email is a non-empty string', function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.email).to.be.a('string').and.not.empty;",
+                  "});",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/accounts/{{accountId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts", "{{accountId}}"]
+            }
+          }
+        },
+        {
+          "name": "GET /accounts/{id} — 404 Not Found (несуществующий ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404 or 500 (account not found)', function () {",
+                  "    // Spring по умолчанию возвращает 500 для необработанных RuntimeException,",
+                  "    // если не добавлен @ControllerAdvice. Принимаем оба варианта.",
+                  "    pm.expect(pm.response.code).to.be.oneOf([404, 500]);",
+                  "});",
+                  "",
+                  "pm.test('Response is not an account object', function () {",
+                  "    try {",
+                  "        var json = pm.response.json();",
+                  "        // Если JSON — убеждаемся, что это не полноценный account",
+                  "        pm.expect(json).to.not.have.all.keys('accountId', 'name', 'email', 'bill');",
+                  "    } catch(e) {",
+                  "        // Ответ не является JSON — это тоже приемлемо для ошибки",
+                  "        pm.expect(pm.response.text()).to.not.be.empty;",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/accounts/99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts", "99999"]
+            }
+          }
+        },
+        {
+          "name": "GET /accounts/{id} — 400/500 (строка вместо ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 4xx or 5xx for invalid path variable', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(400, 599);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/accounts/abc",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts", "abc"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Get All Accounts — GET /accounts",
+      "item": [
+        {
+          "name": "GET /accounts — 200 OK (список аккаунтов)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Content-Type is application/json', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Array is not empty (после создания аккаунтов)', function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test('Each element has required fields', function () {",
+                  "    var json = pm.response.json();",
+                  "    json.forEach(function(account) {",
+                  "        pm.expect(account).to.have.property('accountId');",
+                  "        pm.expect(account).to.have.property('name');",
+                  "        pm.expect(account).to.have.property('email');",
+                  "        pm.expect(account).to.have.property('bill');",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test('accountId is a positive number in each element', function () {",
+                  "    var json = pm.response.json();",
+                  "    json.forEach(function(account) {",
+                  "        pm.expect(account.accountId).to.be.a('number').and.above(0);",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Delete Account — DELETE /accounts/{id}",
+      "item": [
+        {
+          "name": "DELETE /accounts/{id} — 200 OK (существующий ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Content-Type is application/json', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response contains deleted account data', function () {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('accountId');",
+                  "    pm.expect(json).to.have.property('name');",
+                  "    pm.expect(json).to.have.property('email');",
+                  "    pm.expect(json).to.have.property('bill');",
+                  "});",
+                  "",
+                  "pm.test('Returned accountId matches deleted ID', function () {",
+                  "    var json = pm.response.json();",
+                  "    var deletedId = parseInt(pm.collectionVariables.get('accountId'));",
+                  "    pm.expect(json.accountId).to.equal(deletedId);",
+                  "});",
+                  "",
+                  "pm.test('Response time is less than 2000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/accounts/{{accountId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts", "{{accountId}}"]
+            }
+          }
+        },
+        {
+          "name": "DELETE /accounts/{id} — 404/500 (уже удалённый ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 4xx or 5xx for already deleted account', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(400, 599);",
+                  "});",
+                  "",
+                  "pm.test('Response is not a valid account object', function () {",
+                  "    try {",
+                  "        var json = pm.response.json();",
+                  "        pm.expect(json).to.not.have.all.keys('accountId', 'name', 'email', 'bill');",
+                  "    } catch(e) {",
+                  "        pm.expect(pm.response.text()).to.not.be.empty;",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/accounts/{{accountId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts", "{{accountId}}"]
+            }
+          }
+        },
+        {
+          "name": "DELETE /accounts/{id} — 404/500 (несуществующий ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 4xx or 5xx for non-existent account', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(400, 599);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/accounts/99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["accounts", "99999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Full Flow (E2E)",
+      "item": [
+        {
+          "name": "E2E: Create → Get → Delete",
+          "item": [
+            {
+              "name": "E2E Step 1 — Create account",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 201', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "var id = pm.response.text().trim();",
+                      "pm.collectionVariables.set('e2eAccountId', id);",
+                      "console.log('E2E account ID:', id);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"E2E Test User\",\n  \"email\": \"e2e@example.com\",\n  \"bill\": 9999\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/accounts",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["accounts"]
+                }
+              }
+            },
+            {
+              "name": "E2E Step 2 — Get created account",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 200', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test('name matches created data', function () {",
+                      "    var json = pm.response.json();",
+                      "    pm.expect(json.name).to.equal('E2E Test User');",
+                      "});",
+                      "",
+                      "pm.test('email matches created data', function () {",
+                      "    var json = pm.response.json();",
+                      "    pm.expect(json.email).to.equal('e2e@example.com');",
+                      "});",
+                      "",
+                      "pm.test('bill matches created data', function () {",
+                      "    var json = pm.response.json();",
+                      "    pm.expect(json.bill).to.equal(9999);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/accounts/{{e2eAccountId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["accounts", "{{e2eAccountId}}"]
+                }
+              }
+            },
+            {
+              "name": "E2E Step 3 — Delete created account",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 200', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test('Returned data matches deleted account', function () {",
+                      "    var json = pm.response.json();",
+                      "    pm.expect(json.name).to.equal('E2E Test User');",
+                      "    pm.expect(json.email).to.equal('e2e@example.com');",
+                      "    pm.expect(json.bill).to.equal(9999);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/accounts/{{e2eAccountId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["accounts", "{{e2eAccountId}}"]
+                }
+              }
+            },
+            {
+              "name": "E2E Step 4 — Verify account is gone",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Status code is 4xx or 5xx after deletion', function () {",
+                      "    pm.expect(pm.response.code).to.be.within(400, 599);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/accounts/{{e2eAccountId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["accounts", "{{e2eAccountId}}"]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "variable": [
+        {
+          "key": "e2eAccountId",
+          "value": "",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
