@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8081:8081"
+    volumes:
+      - h2-data:/data
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:/data/test
+    restart: unless-stopped
+
+volumes:
+  h2-data:
